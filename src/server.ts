@@ -30,6 +30,7 @@ app.get("/", (_req, res) => {
       "GET /users",
       "GET /users/:id",
       "POST /users",
+      "DELETE /users/:id",
     ],
   });
 });
@@ -86,6 +87,28 @@ app.post("/users", async (req, res) => {
       && error.code === "P2002"
     ) {
       return res.status(409).json({ error: "A user with that email already exists" });
+    }
+
+    throw error;
+  }
+});
+
+app.delete("/users/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedUser = await prisma.user.delete({ where: { id } });
+
+    return res.json({
+      message: `Deleted user ${deletedUser.id}`,
+      user: deletedUser,
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError
+      && error.code === "P2025"
+    ) {
+      return res.status(404).json({ error: "User not found" });
     }
 
     throw error;
