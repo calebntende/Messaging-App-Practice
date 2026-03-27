@@ -6,6 +6,8 @@ export interface Message {
 }
 
 export interface User {
-  userid: number;
+  id: string;
   name: string;
+  email: string;
+  createdAt: string;
 }
